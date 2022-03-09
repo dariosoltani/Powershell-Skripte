@@ -1,4 +1,9 @@
 <#
+Edited to also include an update of the RemoteApp if the connection has already been configured, meant to be used as a logon script.
+
+Based on:
+https://github.com/dwydler/Powershell-Skripte/blob/master/Microsoft/Windows/install-connection-for-remote-apps-desktop-collections.ps1
+
 .SYNOPSIS
     Installs a connection in RemoteApp and Desktop Connections.
 .DESCRIPTION
@@ -65,7 +70,11 @@ else {
         }
         else {
             if (CheckForConnection $connectionUrl) {
-                Write-Host "The connection in RemoteApp and Desktop Connections already exists." -ForegroundColor Yellow
+				#if connection exists, make sure they get updated
+				Start-Process -FilePath rundll32.exe -ArgumentList 'tsworkspace,TaskUpdateWorkspaces2' -NoNewWindow 
+				Start-Process -FilePath rundll32.exe -ArgumentList 'tsworkspace,WorkspaceStatusNotify2' -NoNewWindow 
+				
+                Write-Host "The connection in RemoteApp and Desktop Connections already exists, initiating update instead." -ForegroundColor Yellow
             }
             else {
                 
@@ -86,4 +95,4 @@ else {
     }
 }
 
-pause
+exit
